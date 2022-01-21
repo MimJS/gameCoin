@@ -1,4 +1,7 @@
-export const socketListener = (socket, dispatch) => {
+export const socketListener = (socket, dispatch, go, initError) => {
+  socket.on("connect_error", () => {
+    initError();
+  });
   socket.on("connect", function (ctx) {
     dispatch({
       type: "setPopout",
@@ -28,9 +31,16 @@ export const socketListener = (socket, dispatch) => {
           return;
       }
     } else {
+      if (ctx.type === "errorNotify" || ctx.type === "connection") {
+        initError(ctx.response);
+      }
     }
   });
-  socket.on("disconnect", async () => {
+  socket.on("disconnect", async (reason) => {
     console.log("off");
+    if (reason === "io server disconnect") {
+      return;
+    }
+    initError();
   });
 };

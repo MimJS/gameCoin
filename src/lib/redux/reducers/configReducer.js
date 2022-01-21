@@ -1,5 +1,5 @@
 const init = {
-  server_url: "https://f1d2191458f79d.lhr.life",
+  server_url: "https://09e0a1cb758344.lhr.life",
 };
 
 export const configReducer = (state = init, action) => {

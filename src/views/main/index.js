@@ -5,16 +5,19 @@ import {
   PanelHeaderContent,
   View,
 } from "@vkontakte/vkui";
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { CoinIcon } from "../../lib/icons";
 import CoinIconUrl from "../../lib/icons/coin.svg";
 import BottomMenu from "./bottomMenu";
 
-const MainView = ({ id, go }) => {
+const MainView = ({ id, go, createSocket }) => {
   //? variables
   const userData = useSelector((s) => s.user);
   const ui = useSelector((s) => s.ui);
-
+  useEffect(() => {
+    createSocket()
+  }, [])
   return (
     <View
       id={id}
