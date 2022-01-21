@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import bridge from "@vkontakte/vk-bridge";
 import {
   AdaptivityProvider,
@@ -27,6 +27,7 @@ const App = () => {
   const dispatch = useDispatch();
   const platform = usePlatform();
   const config = useSelector((s) => s.config);
+  const timer = useRef();
 
   const goBack = () => {
     if (history.length === 1) {
@@ -73,7 +74,7 @@ const App = () => {
       reconnection: false,
       transports: ["websocket"],
     });
-    socketListener(socket, dispatch, go, initError);
+    socketListener(socket, dispatch, go, initError, timer);
   };
 
   const go = (e) => {
@@ -104,6 +105,7 @@ const App = () => {
   };
 
   const initError = (error) => {
+    clearInterval(timer.current);
     dispatch({
       type: "setDbData",
       payload: {},

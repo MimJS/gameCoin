@@ -1,4 +1,12 @@
-export const socketListener = (socket, dispatch, go, initError) => {
+export const socketListener = (socket, dispatch, go, initError, timer) => {
+  const mine = () => {
+    timer.current = setInterval(() => {
+        dispatch({
+          type: "addMine",
+          payload: null,
+        });
+      }, 1000);
+  };
   socket.on("connect_error", () => {
     initError();
   });
@@ -17,6 +25,13 @@ export const socketListener = (socket, dispatch, go, initError) => {
     if (ctx.status) {
       switch (ctx.type) {
         case "getPlayerData":
+          mine();
+          dispatch({
+            type: "setDbData",
+            payload: ctx.response,
+          });
+          return;
+        case "updatePlayerData":
           dispatch({
             type: "setDbData",
             payload: ctx.response,
@@ -38,6 +53,7 @@ export const socketListener = (socket, dispatch, go, initError) => {
   });
   socket.on("disconnect", async (reason) => {
     console.log("off");
+    clearInterval(timer.current);
     if (reason === "io server disconnect") {
       return;
     }

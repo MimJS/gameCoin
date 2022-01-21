@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { CoinIcon } from "../../lib/icons";
 import CoinIconUrl from "../../lib/icons/coin.svg";
+import { number_format } from "../../lib/scripts/util";
 import BottomMenu from "./bottomMenu";
 
 const MainView = ({ id, go, createSocket }) => {
@@ -16,8 +17,8 @@ const MainView = ({ id, go, createSocket }) => {
   const userData = useSelector((s) => s.user);
   const ui = useSelector((s) => s.ui);
   useEffect(() => {
-    createSocket()
-  }, [])
+    createSocket();
+  }, []);
   return (
     <View
       id={id}
@@ -47,11 +48,13 @@ const MainView = ({ id, go, createSocket }) => {
               <div className="balance">
                 <span className="header">Ваш счет:</span>
                 <div className="coins">
-                  <span className="sum">0</span>
+                  <span className="sum">
+                    {number_format(userData?.dbData?.coins / 1000)}
+                  </span>
                   <CoinIcon width={28} height={28} />
                 </div>
-                <span className="perSec subheader">+ 0.000 / сек.</span>
-                <span className="perClick subheader">+ 0.001 / клик.</span>
+                <span className="perSec subheader">+ {number_format(userData?.dbData?.mine / 1000)} / сек.</span>
+                <span className="perClick subheader">+ {number_format(userData?.dbData?.click / 1000)} / клик.</span>
               </div>
               <div className="clickCoin">
                 <img src={CoinIconUrl} />
