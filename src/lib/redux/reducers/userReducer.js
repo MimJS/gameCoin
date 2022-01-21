@@ -1,11 +1,15 @@
 const init = {
-  vkData: {},
+  dbData: {},
+  //? Profile data
+  usersOnline: 0,
 };
 
 export const userReducer = (state = init, action) => {
   switch (action.type) {
-    case "setVkData":
-      return { ...state, vkData: action.payload };
+    case "updateOnline":
+      return { ...state, usersOnline: action.payload };
+    case "setDbData":
+      return { ...state, dbData: action.payload };
     default:
       return state;
   }

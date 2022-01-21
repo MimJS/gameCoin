@@ -10,14 +10,18 @@ import {
 } from "@vkontakte/vkui";
 import "@vkontakte/vkui/dist/vkui.css";
 import "./lib/styles/index.scss";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import MainView from "./views/main";
+import io from "socket.io-client";
+import { socketListener } from "./lib/scripts/socketTool";
+import axios from "axios";
 
 const App = () => {
   const viewList = ["main"];
   const [activeView, setactiveView] = useState("main");
   const dispatch = useDispatch();
   const platform = usePlatform();
+  const config = useSelector((s) => s.config);
 
   const goBack = () => {
     if (history.length === 1) {
@@ -45,17 +49,17 @@ const App = () => {
     });
     async function fetchData() {
       const user = await bridge.send("VKWebAppGetUserInfo");
-      dispatch({
-        type: "setVkData",
-        payload: user,
-      });
-      dispatch({
-        type: "setPopout",
-        payload: {
-          viewName: "mainView",
-          popout: null,
+      let token = await getLocalToken(user.id);
+      console.log(token);
+      var socket = io.connect(config.server_url, {
+        path: "/app/websocket",
+        query: {
+          access_token: token,
         },
+        reconnection: false,
+        transports: ["websocket"],
       });
+      socketListener(socket, dispatch);
     }
     fetchData();
   }, []);
@@ -66,6 +70,20 @@ const App = () => {
       setactiveView(e);
       history.push(e);
     }
+  };
+
+  const getLocalToken = async (id) => {
+    return await axios
+      .post(`${config.server_url}/app/authorize`, {
+        authorization: {
+          type: "vk-mini-apps",
+          vk_user_id: id,
+          vk_query: window.location.search,
+        },
+      })
+      .then((data) => {
+        return data.data.response.access_token;
+      });
   };
 
   return (

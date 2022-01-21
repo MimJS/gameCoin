@@ -50,5 +50,54 @@
                 }
             }
         }
+        .gameContent {
+            .balance {
+                display: flex;
+                flex-direction: column;
+                .header {
+                    margin-top: 30px;
+                    text-align: center;
+                    font-size: 14px;
+                    color: var(--text_secondary);
+                }
+                .coins {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    .sum {
+                        font-size: 35px;
+                    }
+                    svg {
+                        margin-left: 8px;
+                    }
+                }
+                .subheader {
+                    text-align: center;
+                    font-size: 14px;
+                    font-weight: 500;
+                }
+                .perSec {
+                    margin-top: 10px;
+                    color: #fb0;
+                }
+                .perClick {
+                    margin-top: 5px;
+                    color: #7279d8;
+                }
+            }
+            .clickCoin {
+                margin-top: 50px;
+                text-align: center;
+                margin-bottom: 150px;
+                img {
+                    width: 75% !important;
+                    border-radius: 200px;
+                    max-width: 300px !important;
+                    &:active {
+                        transform: scale(0.95);
+                    }
+                }
+            }
+        }
     }
 }
