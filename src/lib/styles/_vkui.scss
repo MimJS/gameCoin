@@ -1,0 +1,55 @@
+
+.View--ios {
+    --padding_left_vk: 12px;
+    --panelheader_height_uni: calc(var(--panelheader_height_ios) + var(--safe-area-inset-top));
+}
+
+.View--android {
+    --padding_left_vk: 16px;
+    --panelheader_height_uni: calc(var(--panelheader_height_android) + var(--safe-area-inset-top));
+}
+
+.FixedLayout.PanelHeader__fixed {
+    border-bottom-right-radius: 16px;
+}
+
+.Alert {
+    border-radius: 16px !important;
+    width: 90% !important;
+    max-width: 400px !important;
+}
+.Alert__content{
+    padding: 15px !important;
+    text-align: left !important;
+}
+
+.verticalText {
+    display: inline-block;
+    vertical-align: middle;
+}
+.verticalText.r {
+    margin-left: 4px;
+}
+.verticalText.l {
+    margin-right: 4px;
+}
+
+.iconCoin {
+    display: inline-block;
+    vertical-align: middle;
+}
+.iconCoin.r {
+    margin-left: 4px;
+}
+.iconCoin.l {
+    margin-right: 4px;
+}
+
+.paddingWrapper {
+    padding: 0 var(--padding_left_vk);
+}
+
+.placeholderFullScreen {
+    height: 100vh;
+    padding: 0 !important;
+}

@@ -14,6 +14,7 @@ import { useDispatch } from "react-redux";
 import MainView from "./views/main";
 
 const App = () => {
+  const viewList = ["main"];
   const [activeView, setactiveView] = useState("main");
   const dispatch = useDispatch();
   const platform = usePlatform();
@@ -23,7 +24,7 @@ const App = () => {
       bridge.send("VKWebAppClose", { status: "success" });
     } else if (history.length > 1) {
       history.pop();
-      setActivePanel(history[history.length - 1]);
+      setactiveView(history[history.length - 1]);
     }
   };
 
@@ -48,15 +49,23 @@ const App = () => {
         type: "setVkData",
         payload: user,
       });
-      setPopout(null);
+      dispatch({
+        type: "setPopout",
+        payload: {
+          viewName: "mainView",
+          popout: null,
+        },
+      });
     }
     fetchData();
   }, []);
 
   const go = (e) => {
-    window.history.pushState({ panel: e }, e);
-    setActivePanel(e);
-    history.push(e);
+    if (viewList.indexOf(e) > -1) {
+      window.history.pushState({ panel: e }, e);
+      setactiveView(e);
+      history.push(e);
+    }
   };
 
   return (
@@ -64,7 +73,7 @@ const App = () => {
       isWebView={true}
       platform={platform === ANDROID ? "android" : "ios"}
     >
-      <AdaptivityProvider>
+      <AdaptivityProvider hasMouse={false}>
         <AppRoot>
           <Root activeView={activeView}>
             <MainView id={"main"} go={go} />

@@ -15,5 +15,42 @@ body {
 }
 
 body[scheme="client_light"] {
-    
+    //? vkui variables
+    --bw_color_text: #000000;
+    --bw_color_text_lite: rgba(0, 0, 0, 0.8);
+    --card_color_bg: rgba(0, 0, 0, 0.1);
+    --header_tint: #ffbb00;
+    --accent: #ffbb00;
+    --tabbar_active_icon: #ffbb00;
+    --background_content: #ffffff !important;
+    --modal_card_background: #ffffff !important;
+    --header_background: #f7f7f8 !important;
+    --button_secondary_background: #f7f7f8 !important;
+    --button_secondary_foreground: #ffbb00 !important;
+    --search_bar_background: #f7f7f8 !important;
+    --search_bar_field_background: #ffffff !important;
+    --tabbar_background: #f7f7f8 !important;
+    --field_background: #f7f7f8 !important;
+    --header_alternate_background: #f7f7f8 !important;
+    --header_text: #2d2d2d !important;
+    --text_primary: #2d2d2d !important;
+    --header_text_secondary: #8f8f8f !important;
+    --overlay_status_icon: #8f8f8f !important;
+    --header_text_alternate: #2d2d2d !important;
+    --separator_common: #f7f7f8 !important;
+    --header_tint_alternate: #ffbb00 !important;
+    --button_primary_background: #ffbb00 !important;
+    --icon_outline_secondary: #ffbb00 !important;
+    --text_secondary: #8f8f8f !important;
+    --field_error_border: #e74c3c !important;
+    --field_error_background: rgba(231, 76, 60, 0.4) !important;
+    --events_card_color_bg: #f7f7f8 !important;
+    //? own variables
+}
+
+body[scheme="client_dark"],
+body[scheme="space_gray"] {
+    --bw_color_text: #ffffff;
+    --bw_color_text_lite: rgba(255, 255, 255, 0.8);
+    --card_color_bg: rgba(255, 255, 255, 0.1);
 }

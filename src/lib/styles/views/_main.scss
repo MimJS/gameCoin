@@ -1,0 +1,54 @@
+#main {
+    #mainView--panel_main {
+        .bottomMenu {
+            background: var(--header_background);
+            border-radius: 16px 16px 0 0;
+            .tabs {
+                @extend %flexCC;
+                padding: 12px 0;
+                width: 100%;
+                .tab {
+                    margin: 0 5px;
+                    padding: 7px 15px;
+                    border-radius: 24px;
+                    color: #656565;
+                    font-weight: 400;
+                    user-select: none;
+                    cursor: pointer;
+                    &.selected {
+                        font-weight: 500;
+                        color: #2d2d2d;
+                        background: var(--background_content);
+                    }
+                }
+            }
+            .menu {
+                padding: 20px 5px;
+                display: flex;
+                border-radius: 16px 16px 0 0;
+                background: var(--background_content);
+                .menuButton {
+                    flex-grow: 1;
+                    @extend %flexCC;
+                    flex-direction: column;
+                    cursor: pointer;
+                    &:active {
+                        svg {
+                            transform: scale(0.95);
+                        }
+                    }
+                    svg {
+                        transition: all 0.1s linear;
+                        width: 44px;
+                        height: 30px;
+                    }
+                    .title {
+                        margin-top: 5px;
+                        font-size: 11px;
+                        font-weight: 400;
+                    }
+                }
+            }
+        }
+    }
+}
