@@ -9,8 +9,13 @@ import {
   Root,
   ScreenSpinner,
 } from "@vkontakte/vkui";
+
+//? Import styles
 import "@vkontakte/vkui/dist/vkui.css";
 import "./lib/styles/index.scss";
+
+//? Import other library
+import { isAndroid } from "react-device-detect";
 import { useDispatch, useSelector } from "react-redux";
 import io from "socket.io-client";
 import { socketListener } from "./lib/scripts/socketTool";
@@ -19,9 +24,10 @@ import axios from "axios";
 //? Import views
 import MainView from "./views/main";
 import ErrorView from "./views/error";
+import RatingView from "./views/rating";
 
 const App = () => {
-  const viewList = ["main", "error"];
+  const viewList = ["main", "error", "rating"];
   const [activeView, setactiveView] = useState("main");
   const [history, setHistory] = useState(["main"]);
   const dispatch = useDispatch();
@@ -59,7 +65,8 @@ const App = () => {
   const createSocket = async () => {
     const user = await bridge.send("VKWebAppGetUserInfo");
     let token = await getLocalToken(user.id).catch((e) => {
-      initError();
+      console.log(e);
+      initError(e);
       return;
     });
     console.log(token);
@@ -74,7 +81,11 @@ const App = () => {
       reconnection: false,
       transports: ["websocket"],
     });
-    socketListener(socket, dispatch, go, initError, timer);
+	dispatch({
+		type:'setSocket',
+		payload:socket
+	})
+    socketListener(socket, dispatch, go, initError, timer)
   };
 
   const go = (e) => {
@@ -99,13 +110,23 @@ const App = () => {
           resolve(data.data.response.access_token);
         })
         .catch((e) => {
-          reject();
+          if (e.response) {
+            if (e.response.data.response) {
+              reject(e.response.data.response);
+            }
+          } else {
+            reject();
+          }
         });
     });
   };
 
   const initError = (error) => {
     clearInterval(timer.current);
+	dispatch({
+		type:'setSocket',
+		payload:null
+	})
     dispatch({
       type: "setDbData",
       payload: {},
@@ -127,13 +148,18 @@ const App = () => {
   return (
     <ConfigProvider
       isWebView={true}
-      platform={platform === ANDROID ? "android" : "ios"}
+      platform={isAndroid ? "android" : "ios"}
     >
       <AdaptivityProvider hasMouse={false}>
         <AppRoot>
           <Root activeView={activeView}>
-            <MainView id={"main"} go={go} createSocket={createSocket} />
+            <MainView
+              id={"main"}
+              go={go}
+              createSocket={createSocket}
+            />
             <ErrorView id={"error"} back={goBack} initError={initError} />
+            <RatingView id={"rating"} back={goBack} />
           </Root>
         </AppRoot>
       </AdaptivityProvider>

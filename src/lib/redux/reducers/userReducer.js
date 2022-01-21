@@ -19,6 +19,18 @@ export const userReducer = (state = init, action) => {
       } else {
         return state;
       }
+    case "addClick":
+      if (state.dbData && Object.keys(state.dbData).length > 0) {
+        return {
+          ...state,
+          dbData: {
+            ...state.dbData,
+            coins: Number(state.dbData.coins + state.dbData.click),
+          },
+        };
+      } else {
+        return state;
+      }
     case "updateOnline":
       return { ...state, usersOnline: action.payload };
     case "setDbData":

@@ -6,7 +6,7 @@ import {
   View,
 } from "@vkontakte/vkui";
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { CoinIcon } from "../../lib/icons";
 import CoinIconUrl from "../../lib/icons/coin.svg";
 import { number_format } from "../../lib/scripts/util";
@@ -16,8 +16,10 @@ const MainView = ({ id, go, createSocket }) => {
   //? variables
   const userData = useSelector((s) => s.user);
   const ui = useSelector((s) => s.ui);
+  const dispatch = useDispatch();
+  const socket = useSelector((s) => s.config.socket);
   useEffect(() => {
-    createSocket();
+    if (!socket) createSocket();
   }, []);
   return (
     <View
@@ -53,11 +55,24 @@ const MainView = ({ id, go, createSocket }) => {
                   </span>
                   <CoinIcon width={28} height={28} />
                 </div>
-                <span className="perSec subheader">+ {number_format(userData?.dbData?.mine / 1000)} / сек.</span>
-                <span className="perClick subheader">+ {number_format(userData?.dbData?.click / 1000)} / клик.</span>
+                <span className="perSec subheader">
+                  + {number_format(userData?.dbData?.mine / 1000)} / сек.
+                </span>
+                <span className="perClick subheader">
+                  + {number_format(userData?.dbData?.click / 1000)} / клик.
+                </span>
               </div>
               <div className="clickCoin">
-                <img src={CoinIconUrl} />
+                <img
+                  src={CoinIconUrl}
+                  onClick={() => {
+                    dispatch({
+                      type: "addClick",
+                      payload: null,
+                    });
+                    socket.emit(`event`, { action: "initClick" });
+                  }}
+                />
               </div>
             </div>
             <BottomMenu go={go} />
