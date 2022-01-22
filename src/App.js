@@ -81,11 +81,11 @@ const App = () => {
       reconnection: false,
       transports: ["websocket"],
     });
-	dispatch({
-		type:'setSocket',
-		payload:socket
-	})
-    socketListener(socket, dispatch, go, initError, timer)
+    dispatch({
+      type: "setSocket",
+      payload: socket,
+    });
+    socketListener(socket, dispatch, go, initError, timer);
   };
 
   const go = (e) => {
@@ -122,20 +122,35 @@ const App = () => {
   };
 
   const initError = (error) => {
-    clearInterval(timer.current);
-	dispatch({
-		type:'setSocket',
-		payload:null
-	})
+    if (history.length > 1) {
+      if (history[history.length - 1] !== "main") {
+        if (history.length === 1) {
+          bridge.send("VKWebAppClose", { status: "success" });
+        } else if (history.length > 1) {
+          history.pop();
+        }
+        initError();
+        return;
+      }
+    }
     dispatch({
-      type: "setDbData",
-      payload: {},
+      type: "setSocket",
+      payload: null,
     });
     dispatch({
       type: "setErrorData",
       payload: error ? error : { error_public: "Сервер временно недоступен" },
     });
     go("error");
+    clearInterval(timer.current);
+    dispatch({
+      type: "setSocket",
+      payload: null,
+    });
+    dispatch({
+      type: "setDbData",
+      payload: {},
+    });
     dispatch({
       type: "setPopout",
       payload: {
@@ -146,20 +161,13 @@ const App = () => {
   };
 
   return (
-    <ConfigProvider
-      isWebView={true}
-      platform={isAndroid ? "android" : "ios"}
-    >
+    <ConfigProvider isWebView={true} platform={isAndroid ? "android" : "ios"}>
       <AdaptivityProvider hasMouse={false}>
         <AppRoot>
           <Root activeView={activeView}>
-            <MainView
-              id={"main"}
-              go={go}
-              createSocket={createSocket}
-            />
-            <ErrorView id={"error"} back={goBack} initError={initError} />
+            <MainView id={"main"} go={go} createSocket={createSocket} />
             <RatingView id={"rating"} back={goBack} />
+            <ErrorView id={"error"} go={go} initError={initError} />
           </Root>
         </AppRoot>
       </AdaptivityProvider>

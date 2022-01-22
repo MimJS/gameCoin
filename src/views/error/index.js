@@ -2,10 +2,10 @@ import { useSelector } from "react-redux";
 import { View, Panel, PanelHeader, Placeholder, Button } from "@vkontakte/vkui";
 import { Icon56ErrorOutline } from "@vkontakte/icons";
 
-const ErrorView = ({ id, back }) => {
+const ErrorView = ({ id, go }) => {
   const errorData = useSelector((s) => s.user.errorData);
   const reInit = () => {
-    back();
+    go("main");
   };
   return (
     <View activePanel="errorView--panel_main" id={id}>

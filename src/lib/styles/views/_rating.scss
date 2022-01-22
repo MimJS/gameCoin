@@ -1,0 +1,192 @@
+#rating {
+    #ratingView--panel_main {
+        .PullToRefresh {
+            .mainRating {
+                position: relative;
+                transition: all 0.2s linear;
+                &.opened {
+                    padding-top: 140px;
+                    .mainRating--content {
+                        border-radius: 16px 16px 0 0;
+                    }
+                }
+                .top3 {
+                    padding: 20px 0;
+                    position: absolute;
+                    width: 100%;
+                    top: 0;
+                    left: 0;
+                    @extend %alignCenter;
+                    .user {
+                        width: 33.33333%;
+                        position: relative;
+                        @extend %flexCC;
+                        .Avatar {
+                            background: #292929;
+                            border-radius: 50%;
+                            padding: 2px;
+                        }
+                        .position {
+                            position: absolute;
+                            width: 72px;
+                            height: 72px;
+                            &.pos2 {
+                                .position--in {
+                                    &::before {
+                                        background: #d0d0d0 !important;
+                                    }
+                                }
+                            }
+                            &.pos3 {
+                                .position--in {
+                                    &::before {
+                                        background: #d7a35b !important;
+                                    }
+                                }
+                            }
+                            &.pos1 {
+                                width: 96px !important;
+                                height: 96px !important;
+                            }
+                            .position--in {
+                                position: absolute;
+                                bottom: 0px;
+                                right: 0px;
+                                width: 28px;
+                                height: 28px;
+                                @extend %flexCC;
+                                svg {
+                                    position: relative;
+                                    z-index: 3;
+                                    width: 15px;
+                                    height: 15px;
+                                }
+                                &::before {
+                                    z-index: 1;
+                                    content: "";
+                                    display: block;
+                                    position: absolute;
+                                    top: 2px;
+                                    left: 2px;
+                                    width: 30px;
+                                    height: 30px;
+                                    background: #fb0;
+                                    border-radius: 50%;
+                                }
+                            }
+                            .position--in_shadow {
+                                box-shadow: 0 0 0 2px #292929;
+                                z-index: 2;
+                                position: absolute;
+                                bottom: 0px;
+                                right: 0px;
+                                width: 28px;
+                                height: 28px;
+                                border-radius: 50%;
+                            }
+                        }
+                    }
+                }
+                .mainRating--content {
+                    position: relative;
+                    z-index: 20;
+                    transition: all 0.2s linear;
+                    background: var(--header_background);
+                    .tabs {
+                        width: 100%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 12px 0;
+                        .tab {
+                            margin: 0 5px;
+                            padding: 7px 15px;
+                            border-radius: 24px;
+                            color: #656565;
+                            font-weight: 400;
+                            &.selected {
+                                font-weight: 500;
+                                color: #2d2d2d;
+                                background: var(--background_content);
+                            }
+                        }
+                    }
+                    .ratingList {
+                        background: #fff;
+                        border-radius: 16px 16px 0 0;
+                        padding-top: 10px;
+                        padding-bottom: 75px;
+                        .ratingBlock {
+                            .Avatar {
+                                box-sizing: content-box;
+                                background: #292929;
+                                border-radius: 50%;
+                                padding: 1px;
+                                box-shadow: 3px 3px 0 0 #fb0;
+                            }
+                            //? vkui SimpleCell descriptiom
+                            .ratingSum {
+                                @extend %alignCenter;
+                                span {
+                                    color: #656565;
+                                    font-size: 13px;
+                                    line-height: 15px;
+                                }
+                                svg {
+                                    margin-left: 4px;
+                                    width: 14px;
+                                    height: 14px;
+                                }
+                            }
+                            .SimpleCell__children {
+                                font-weight: 500;
+                                font-size: 14px;
+                            }
+                            .ratingPosition {
+                                font-weight: 500;
+                                font-size: 12px;
+                                color: #656565;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .myTop {
+            background: #f7f7f8;
+            border-radius: 16px 16px 0 0;
+            .ratingBlock {
+                .Avatar {
+                    box-sizing: content-box;
+                    background: #ffeaa8;
+                    border-radius: 50%;
+                    padding: 1px;
+                    box-shadow: 3px 3px 0 0 #fb0;
+                }
+                //? vkui SimpleCell descriptiom
+                .ratingSum {
+                    @extend %alignCenter;
+                    span {
+                        color: #656565;
+                        font-size: 13px;
+                        line-height: 15px;
+                    }
+                    svg {
+                        margin-left: 4px;
+                        width: 14px;
+                        height: 14px;
+                    }
+                }
+                .SimpleCell__children {
+                    font-weight: 500;
+                    font-size: 14px;
+                }
+                .ratingPosition {
+                    font-weight: 500;
+                    font-size: 12px;
+                    color: #656565;
+                }
+            }
+        }
+    }
+}

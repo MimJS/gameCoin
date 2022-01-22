@@ -3,6 +3,9 @@ const init = {
   //? Profile data
   usersOnline: 0,
   errorData: {},
+  ratingData: {
+    all: {},
+  },
 };
 
 export const userReducer = (state = init, action) => {
@@ -40,6 +43,10 @@ export const userReducer = (state = init, action) => {
         ...state,
         errorData: action.payload,
       };
+    case "setRatingData":
+      let newValue = { ...state.ratingData };
+      newValue[action.payload.ratingName] = action.payload.data;
+      return { ...state, ratingData: newValue };
     default:
       return state;
   }
