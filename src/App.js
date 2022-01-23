@@ -32,16 +32,19 @@ const App = () => {
   const [activeView, setactiveView] = useState("main");
   const history = useSelector((s) => s.ui.history);
   const dispatch = useDispatch();
-  const platform = usePlatform();
+  const userData = useSelector((s) => s.user.dbData);
   const config = useSelector((s) => s.config);
   const socket = useSelector((s) => s.config.socket);
   const timer = useRef();
   useEffect(() => {
-   if(history.length === 0){
-    bridge.send("VKWebAppClose", { status: "success" });
-   }
+    if (history.length === 0) {
+      bridge.send("VKWebAppClose", { status: "success" });
+    }
   }, [history]);
   const goBack = () => {
+    if (Object.keys(userData).length == 0) {
+      return;
+    }
     console.log(history);
     if (history.length === 0) {
       return;
@@ -102,13 +105,12 @@ const App = () => {
           type: "setSocket",
           payload: null,
         });
+        initError(
+          { error_public: "Подождите, переподключение к серверу" },
+          true,
+          false
+        );
       }
-
-      initError(
-        { error_public: "Подождите, переподключение к серверу" },
-        true,
-        false
-      );
     }
     if (v.detail.type === "VKWebAppViewRestore") {
       await clearHistory();
