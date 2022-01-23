@@ -12,14 +12,14 @@ import CoinIconUrl from "../../lib/icons/coin.svg";
 import { number_format } from "../../lib/scripts/util";
 import BottomMenu from "./bottomMenu";
 
-const MainView = ({ id, go, createSocket }) => {
+const MainView = ({ id, go, createSocket, history }) => {
   //? variables
   const userData = useSelector((s) => s.user);
   const ui = useSelector((s) => s.ui);
   const dispatch = useDispatch();
   const socket = useSelector((s) => s.config.socket);
   useEffect(() => {
-    if (!socket) createSocket();
+    if (socket == null) createSocket();
   }, []);
   return (
     <View
@@ -30,7 +30,13 @@ const MainView = ({ id, go, createSocket }) => {
       <Panel id="mainView--panel_main">
         <PanelHeader separator={false}>
           <PanelHeaderContent
-            before={<Avatar size={40} src={userData?.dbData?.vk?.photo_100} />}
+            before={
+              <Avatar
+                size={40}
+                src={userData?.dbData?.vk?.photo_100}
+                onClick={() => go("profile")}
+              />
+            }
             status={
               Object.keys(userData.dbData).length === 0
                 ? "..."
@@ -49,6 +55,7 @@ const MainView = ({ id, go, createSocket }) => {
             <div className="gameContent">
               <div className="balance">
                 <span className="header">Ваш счет:</span>
+                {JSON.stringify(history)}
                 <div className="coins">
                   <span className="sum">
                     {number_format(userData?.dbData?.coins / 1000)}

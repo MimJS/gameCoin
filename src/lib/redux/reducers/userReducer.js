@@ -2,13 +2,16 @@ const init = {
   dbData: {},
   //? Profile data
   usersOnline: 0,
-  errorData: {},
+  errorData: {
+    showButton: true,
+  },
   ratingData: {
     all: [],
     groups: [],
     friends: [],
     error: false,
     myTop: {},
+    myGroup: false,
   },
 };
 
@@ -45,7 +48,10 @@ export const userReducer = (state = init, action) => {
     case "setErrorData":
       return {
         ...state,
-        errorData: action.payload,
+        errorData: {
+          ...action.payload,
+          showButton: action.showButton != null ? action.showButton : true,
+        },
       };
     case "setRatingData":
       let newValue = { ...state.ratingData };

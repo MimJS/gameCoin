@@ -1,8 +1,8 @@
 const init = {
-  server_url: "https://f016d5911a21e1.lhr.life",
+  server_url: "https://a05fc2d5a35b46.lhr.life",
   socket: null,
   vkToken: null,
-  appId:8057051
+  appId: 8057051,
 };
 
 export const configReducer = (state = init, action) => {

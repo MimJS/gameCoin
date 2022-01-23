@@ -10,7 +10,7 @@ import {
   Avatar,
   FixedLayout,
 } from "@vkontakte/vkui";
-import { Icon28ChevronBack } from "@vkontakte/icons";
+import { Icon28ChevronBack, Icon28AddCircleOutline } from "@vkontakte/icons";
 import {
   CoinIcon,
   RatingOneIcon,
@@ -32,6 +32,7 @@ const RatingView = ({ id, back }) => {
     groups: [],
     friends: [],
     error: false,
+    myGroup: null,
   });
   const [view, setView] = useState(false);
   const ratingData = useSelector((s) => s.user.ratingData);
@@ -55,7 +56,16 @@ const RatingView = ({ id, back }) => {
 
   //? functions
   const selectTab = (id) => {
-    if (activeTab !== id) setActiveTab(id);
+    if (activeTab !== id) {
+      setActiveTab(id);
+      if (id === 1 && localRating.groups.length === 0) {
+        socket.emit(`event`, {
+          action: "getGroupsRating",
+        });
+        setAwaitSort(true);
+        setView(false);
+      }
+    }
   };
   const getVkToken = () => {
     return new Promise(async (resolve, reject) => {
@@ -120,32 +130,96 @@ const RatingView = ({ id, back }) => {
     return;
   };
 
-  useEffect(() => {
-    if (localRating.all.length === 0 && !awaitSort) {
-      socket.emit(`event`, {
-        action: "getPlayersRating",
+  const getGroupInfo = async (ids) => {
+    console.log(ids);
+    if (ratingData.error) {
+      return;
+    }
+    const token = vkToken ? vkToken : await getVkToken();
+    console.log(token);
+    if (!token) {
+      setLocalRating({
+        ...localRating,
+        groups: ratingData.groups,
       });
-      setAwaitSort(true);
-    } else if (ratingData.all.length > 0) {
-      console.log(awaitSort);
-      if (awaitSort) {
-        console.log(activeTab);
-        if (activeTab === 0 && !sortStarted) {
-          let usersId = "";
-          ratingData.all.forEach((v, i) => {
-            usersId += `${v.id},`;
-          });
-          getUserInfo(usersId);
-          setSortStarted(true);
+      setAwaitSort(false);
+      setSortStarted(false);
+      setView(true);
+      return;
+    }
+    dispatch({
+      type: "setVkToken",
+      payload: token,
+    });
+    const groupInfo = await bridge.send("VKWebAppCallAPIMethod", {
+      method: "groups.getById",
+      request_id: "gameCoin_request",
+      params: {
+        group_ids: ids,
+        v: "5.131",
+        access_token: token,
+      },
+    });
+    let rating = [];
+    groupInfo.response.forEach((v, i) => {
+      rating.push({
+        ...v,
+        ...ratingData.groups[i],
+      });
+    });
+    setLocalRating({
+      ...localRating,
+      groups: rating,
+    });
+    setAwaitSort(false);
+    setSortStarted(false);
+    setView(true);
+    return;
+  };
+
+  useEffect(async () => {
+    console.log(localRating);
+    if (activeTab === 0) {
+      if (localRating.all.length === 0 && !awaitSort) {
+        socket.emit(`event`, {
+          action: "getPlayersRating",
+        });
+        setAwaitSort(true);
+      } else if (ratingData.all.length > 0) {
+        console.log(awaitSort);
+        if (awaitSort) {
+          console.log(activeTab);
+          if (!sortStarted) {
+            let usersId = "";
+            ratingData.all.forEach((v, i) => {
+              usersId += `${v.id},`;
+            });
+            getUserInfo(usersId);
+            setSortStarted(true);
+          }
         }
       }
-    } else {
+    }
+
+    if (
+      activeTab === 1 &&
+      !sortStarted &&
+      awaitSort &&
+      ratingData.groups.length > 0
+    ) {
+      let groupsId = "";
+      ratingData.groups.forEach((v, i) => {
+        groupsId += `${Math.abs(v.id)},`;
+      });
+      console.log(groupsId);
       console.log(ratingData);
+      await getGroupInfo(groupsId);
+      setSortStarted(true);
+      GetLocalGroup(ratingData);
+    } else {
+      console.log(sortStarted);
     }
   }, [ratingData, awaitSort, activeTab, sortStarted]);
-  useEffect(() => {
-    console.log(localRating);
-  }, [localRating]);
 
   const onRefresh = () => {
     setIsFetch(true);
@@ -153,10 +227,44 @@ const RatingView = ({ id, back }) => {
       socket.emit(`event`, {
         action: "getPlayersRating",
       });
+      setSortStarted(false);
       setAwaitSort(true);
-      setIsFetch(false);
+    }
+    if (activeTab === 1) {
+      socket.emit(`event`, {
+        action: "getGroupsRating",
+      });
+      setSortStarted(false);
+      setAwaitSort(true);
+    }
+    setIsFetch(false);
+    return;
+  };
+
+  const GetLocalGroup = async (ratingData) => {
+    console.log(ratingData);
+    const token = vkToken ? vkToken : await getVkToken();
+    if (!token) {
+      const groupInfo = ratingData.myGroup;
+      return setLocalRating((p) => ({
+        ...p,
+        myGroup: groupInfo,
+      }));
     } else {
-      setIsFetch(false);
+      const groupinfo = await bridge.send("VKWebAppCallAPIMethod", {
+        method: "groups.getById",
+        request_id: "gameCoin_request_local_group",
+        params: {
+          group_ids: String(Math.abs(ratingData.myGroup.id)),
+          v: "5.131",
+          access_token: token,
+        },
+      });
+      const groupInfo = groupinfo.response[0];
+      return setLocalRating((p) => ({
+        ...p,
+        myGroup: groupInfo,
+      }));
     }
   };
 
@@ -257,6 +365,45 @@ const RatingView = ({ id, back }) => {
                         : `@id` + v.id}
                     </SimpleCell>
                   ))}
+                {view &&
+                  activeTab === 1 &&
+                  localRating.groups.map((v, i) => (
+                    <SimpleCell
+                      key={i}
+                      onClick={() =>
+                        window.open(
+                          "https://vk.com/public" + Math.abs(v.id),
+                          "_blank"
+                        )
+                      }
+                      before={<Avatar size={40} src={v.photo_100} />}
+                      description={
+                        <div className="ratingSum">
+                          <span>{number_format(v.coins / 1000)}</span>
+                          <CoinIcon />
+                        </div>
+                      }
+                      className="ratingBlock"
+                      indicator={
+                        <span className="ratingPosition">{i + 1} место</span>
+                      }
+                      hasHover={false}
+                      hasActive={false}
+                    >
+                      {v.name ? v.name : `@public` + Math.abs(v.id)}
+                    </SimpleCell>
+                  ))}
+                {view && activeTab === 1 && (
+                  <SimpleCell
+                    className="addMyGroup"
+                    before={<Icon28AddCircleOutline />}
+                    hasHover={false}
+                    hasActive={false}
+                    onClick={() => bridge.send("VKWebAppAddToCommunity")}
+                  >
+                    Добавить мою группу
+                  </SimpleCell>
+                )}
               </List>
             </div>
           </div>
@@ -284,6 +431,42 @@ const RatingView = ({ id, back }) => {
             </SimpleCell>
           </FixedLayout>
         )}
+        {view &&
+          activeTab === 1 &&
+          Object.keys(ratingData.myGroup).length > 0 &&
+          typeof ratingData.myGroup !== "boolean" && (
+            <FixedLayout vertical="bottom" className="myTop">
+              <SimpleCell
+                onClick={() => console.log(typeof ratingData.myGroup)}
+                before={
+                  <Avatar
+                    size={40}
+                    src={localRating.myGroup && localRating.myGroup.photo_100}
+                  />
+                }
+                description={
+                  <div className="ratingSum">
+                    <span>
+                      {number_format(ratingData.myGroup.coins / 1000)}
+                    </span>
+                    <CoinIcon />
+                  </div>
+                }
+                className="ratingBlock"
+                indicator={
+                  <span className="ratingPosition">
+                    ~ {ratingData.myGroup.position} место
+                  </span>
+                }
+                hasHover={false}
+                hasActive={false}
+              >
+                {localRating.myGroup
+                  ? localRating.myGroup.name
+                  : "@public" + Math.abs(ratingData.myGroup.id)}
+              </SimpleCell>
+            </FixedLayout>
+          )}
       </Panel>
     </View>
   );

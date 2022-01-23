@@ -1,6 +1,9 @@
 #rating {
     #ratingView--panel_main {
         .PullToRefresh {
+            .vkuiPullToRefresh__controls {
+                z-index: 30;
+            }
             .mainRating {
                 position: relative;
                 transition: all 0.2s linear;
@@ -116,6 +119,12 @@
                         border-radius: 16px 16px 0 0;
                         padding-top: 10px;
                         padding-bottom: 75px;
+                        .addMyGroup {
+                            .SimpleCell__children {
+                                font-weight: 500;
+                                font-size: 14px;
+                            }
+                        }
                         .ratingBlock {
                             .Avatar {
                                 box-sizing: content-box;

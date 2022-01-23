@@ -51,6 +51,20 @@ export const socketListener = (socket, dispatch, go, initError, timer) => {
             payload: { ratingName: "myTop", data: ctx.response.player },
           });
           return;
+        case "getGroupsRating":
+          dispatch({
+            type: "setRatingData",
+            payload: { ratingName: "error", data: false },
+          });
+          dispatch({
+            type: "setRatingData",
+            payload: { ratingName: "groups", data: ctx.response.rating },
+          });
+          dispatch({
+            type: "setRatingData",
+            payload: { ratingName: "myGroup", data: ctx.response.group },
+          });
+          return;
         case "updateOnline":
           dispatch({
             type: "updateOnline",
@@ -65,7 +79,7 @@ export const socketListener = (socket, dispatch, go, initError, timer) => {
         initError(ctx.response);
         return;
       }
-      if (ctx.type === "getPlayersRating") {
+      if (ctx.type === "getPlayersRating" || ctx.type === "getGroupsRating") {
         dispatch({
           type: "setRatingData",
           payload: { ratingName: "error", data: true },

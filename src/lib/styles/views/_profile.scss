@@ -1,0 +1,101 @@
+#profile {
+    #profileView--panel_main {
+        .userInfo {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            .Avatar {
+                border: 2px solid #000;
+                box-shadow: 8px 8px 0 0 #ffc832;
+                border-radius: 50%;
+            }
+            .name {
+                margin-top: 25px;
+                font-size: 20px;
+                font-weight: 700;
+            }
+        }
+        .menuContent {
+            margin-top: 30px;
+            background: var(--header_background);
+            .statistic {
+                background: var(--background_content);
+                .statistic--in {
+                    border-radius: 16px 16px 0 0;
+                    background: var(--header_background);
+                    padding: var(--padding_left_vk);
+                    .statistic--in__content {
+                        border-radius: 8px;
+                        padding: 10px 0;
+                        background: var(--background_content);
+                        .header {
+                            display: block;
+                            width: 100%;
+                            text-align: center;
+                            font-size: 13px;
+                            color: var(--text_secondary);
+                        }
+                        .coins {
+                            text-align: center;
+                            margin-top: 10px;
+                            @extend %flexCC;
+                            .count {
+                                font-size: 32px;
+                            }
+                            svg {
+                                margin-left: 8px;
+                                width: 28px;
+                                height: 28px;
+                            }
+                        }
+                    }
+                }
+            }
+            .menu {
+                padding-top: 20px;
+                background: #fff;
+                border-radius: 16px 16px 0 0;
+                .statistic__mini {
+                    @extend %alignCenter;
+                    .statistic__mini--block {
+                        flex: 1;
+                        @extend %flexCC;
+                        flex-direction: column;
+
+                        .header {
+                            color: #8f8f8f;
+                            font-size: 13px;
+                        }
+                        .value {
+                            margin-top: 5px;
+                            color: #2d2d2d;
+                            font-size: 15px;
+                            font-weight: 500;
+                        }
+                    }
+                }
+                .menuList {
+                    padding: 12px;
+                    .menuList--block {
+                        display: flex;
+                        align-items: center;
+                        padding: 15px 20px;
+                        transition: all 0.2s linear;
+                        border-radius: 16px;
+                        svg {
+                            width: 44px;
+                            height: 30px;
+                        }
+                        .menuList--block__content {
+                            margin-left: 15px;
+                            font-weight: 500;
+                            font-size: 14px;
+                            color: #2d2d2d;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

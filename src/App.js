@@ -25,25 +25,17 @@ import axios from "axios";
 import MainView from "./views/main";
 import ErrorView from "./views/error";
 import RatingView from "./views/rating";
+import ProfileView from "./views/profile";
 
 const App = () => {
-  const viewList = ["main", "error", "rating"];
+  const viewList = ["main", "error", "rating", "profile"];
   const [activeView, setactiveView] = useState("main");
   const [history, setHistory] = useState(["main"]);
   const dispatch = useDispatch();
   const platform = usePlatform();
   const config = useSelector((s) => s.config);
+  const socket = useSelector((s) => s.config.socket);
   const timer = useRef();
-
-  bridge.subscribe((v) => {
-    if (v.detail.type === "VKWebAppViewHide") {
-      if (config.socket) {
-        config.socket.disconnect();
-      }
-      initError(null, false);
-    }
-    console.log(v);
-  });
 
   const goBack = () => {
     if (history.length === 1) {
@@ -53,6 +45,26 @@ const App = () => {
         dispatch({
           type: "setRatingData",
           payload: { ratingName: "all", data: {} },
+        });
+        dispatch({
+          type: "setRatingData",
+          payload: { ratingName: "groups", data: {} },
+        });
+        dispatch({
+          type: "setRatingData",
+          payload: { ratingName: "friends", data: {} },
+        });
+        dispatch({
+          type: "setRatingData",
+          payload: { ratingName: "error", data: false },
+        });
+        dispatch({
+          type: "setRatingData",
+          payload: { ratingName: "myTop", data: {} },
+        });
+        dispatch({
+          type: "setRatingData",
+          payload: { ratingName: "myGroup", data: false },
         });
       }
       history.pop();
@@ -77,6 +89,35 @@ const App = () => {
       navigation_bar_color: "#F7F7F8",
     });
   }, []);
+
+  bridge.subscribe(async (v) => {
+    if (v.detail.type === "VKWebAppViewHide") {
+      if (socket != null) {
+        socket.disconnect(true);
+        dispatch({
+          type: "setSocket",
+          payload: null,
+        });
+      }
+
+      initError(
+        { error_public: "Подождите, переподключение к серверу" },
+        true,
+        false
+      );
+    }
+    if (v.detail.type === "VKWebAppViewRestore") {
+      await clearHistory();
+      setactiveView("main");
+    }
+    console.log(v);
+  });
+
+  const clearHistory = () => {
+    window.history.go(-window.history.length);
+    setHistory(["main"]);
+    setactiveView("main");
+  };
 
   const createSocket = async () => {
     const user = await bridge.send("VKWebAppGetUserInfo");
@@ -118,7 +159,7 @@ const App = () => {
         .post(`${config.server_url}/app/authorize`, {
           authorization: {
             type: "vk-mini-apps",
-            vk_user_id: id,
+            vk_user_id: String(id),
             vk_query: window.location.search,
           },
         })
@@ -137,18 +178,7 @@ const App = () => {
     });
   };
 
-  const initError = (error, openView = true) => {
-    if (history.length > 1) {
-      if (history[history.length - 1] !== "main") {
-        if (history.length === 1) {
-          bridge.send("VKWebAppClose", { status: "success" });
-        } else if (history.length > 1) {
-          history.pop();
-        }
-        initError();
-        return;
-      }
-    }
+  const initError = (error, openView = true, showButton = true) => {
     dispatch({
       type: "setSocket",
       payload: null,
@@ -169,6 +199,7 @@ const App = () => {
       dispatch({
         type: "setErrorData",
         payload: error ? error : { error_public: "Сервер временно недоступен" },
+        showButton: showButton,
       });
       go("error");
     }
@@ -179,9 +210,15 @@ const App = () => {
       <AdaptivityProvider hasMouse={false}>
         <AppRoot>
           <Root activeView={activeView}>
-            <MainView id={"main"} go={go} createSocket={createSocket} />
+            <MainView
+              id={"main"}
+              go={go}
+              createSocket={createSocket}
+              history={history}
+            />
             <RatingView id={"rating"} back={goBack} />
-            <ErrorView id={"error"} go={go} initError={initError} />
+            <ProfileView id={"profile"} back={goBack} />
+            <ErrorView id={"error"} history={history} go={clearHistory} initError={initError} />
           </Root>
         </AppRoot>
       </AdaptivityProvider>
