@@ -1,11 +1,11 @@
 export const socketListener = (socket, dispatch, go, initError, timer) => {
   const mine = () => {
     timer.current = setInterval(() => {
-        dispatch({
-          type: "addMine",
-          payload: null,
-        });
-      }, 1000);
+      dispatch({
+        type: "addMine",
+        payload: null,
+      });
+    }, 1000);
   };
   socket.on("connect_error", () => {
     initError();
@@ -37,24 +37,50 @@ export const socketListener = (socket, dispatch, go, initError, timer) => {
             payload: ctx.response,
           });
           return;
+        case "getPlayersRating":
+          dispatch({
+            type: "setRatingData",
+            payload: { ratingName: "error", data: false },
+          });
+          dispatch({
+            type: "setRatingData",
+            payload: { ratingName: "all", data: ctx.response.rating },
+          });
+          dispatch({
+            type: "setRatingData",
+            payload: { ratingName: "myTop", data: ctx.response.player },
+          });
+          return;
         case "updateOnline":
           dispatch({
             type: "updateOnline",
             payload: ctx.response.online,
           });
+          return;
         default:
           return;
       }
     } else {
       if (ctx.type === "errorNotify" || ctx.type === "connection") {
         initError(ctx.response);
+        return;
+      }
+      if (ctx.type === "getPlayersRating") {
+        dispatch({
+          type: "setRatingData",
+          payload: { ratingName: "error", data: true },
+        });
+        return;
       }
     }
   });
   socket.on("disconnect", async (reason) => {
     console.log("off");
     clearInterval(timer.current);
-    if (reason === "io server disconnect") {
+    if (
+      reason === "io server disconnect" ||
+      reason === "io client disconnect"
+    ) {
       return;
     }
     initError();

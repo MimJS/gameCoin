@@ -3,6 +3,7 @@ import { ScreenSpinner } from "@vkontakte/vkui";
 const init = {
   popout: {
     mainView: <ScreenSpinner size="medium" />,
+    ratingView: <ScreenSpinner size="medium" />,
   },
 };
 

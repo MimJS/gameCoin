@@ -4,7 +4,11 @@ const init = {
   usersOnline: 0,
   errorData: {},
   ratingData: {
-    all: {},
+    all: [],
+    groups: [],
+    friends: [],
+    error: false,
+    myTop: {},
   },
 };
 

@@ -35,10 +35,26 @@ const App = () => {
   const config = useSelector((s) => s.config);
   const timer = useRef();
 
+  bridge.subscribe((v) => {
+    if (v.detail.type === "VKWebAppViewHide") {
+      if (config.socket) {
+        config.socket.disconnect();
+      }
+      initError(null, false);
+    }
+    console.log(v);
+  });
+
   const goBack = () => {
     if (history.length === 1) {
       bridge.send("VKWebAppClose", { status: "success" });
     } else if (history.length > 1) {
+      if (history[history.length - 1] === "rating") {
+        dispatch({
+          type: "setRatingData",
+          payload: { ratingName: "all", data: {} },
+        });
+      }
       history.pop();
       console.log(history[history.length - 1]);
       setactiveView(history[history.length - 1]);
@@ -121,7 +137,7 @@ const App = () => {
     });
   };
 
-  const initError = (error) => {
+  const initError = (error, openView = true) => {
     if (history.length > 1) {
       if (history[history.length - 1] !== "main") {
         if (history.length === 1) {
@@ -137,16 +153,7 @@ const App = () => {
       type: "setSocket",
       payload: null,
     });
-    dispatch({
-      type: "setErrorData",
-      payload: error ? error : { error_public: "Сервер временно недоступен" },
-    });
-    go("error");
     clearInterval(timer.current);
-    dispatch({
-      type: "setSocket",
-      payload: null,
-    });
     dispatch({
       type: "setDbData",
       payload: {},
@@ -158,6 +165,13 @@ const App = () => {
         popout: <ScreenSpinner size={"medium"} />,
       },
     });
+    if (openView) {
+      dispatch({
+        type: "setErrorData",
+        payload: error ? error : { error_public: "Сервер временно недоступен" },
+      });
+      go("error");
+    }
   };
 
   return (

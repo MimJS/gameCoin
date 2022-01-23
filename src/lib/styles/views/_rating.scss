@@ -121,7 +121,7 @@
                                 box-sizing: content-box;
                                 background: #292929;
                                 border-radius: 50%;
-                                padding: 1px;
+                                padding: 2px;
                                 box-shadow: 3px 3px 0 0 #fb0;
                             }
                             //? vkui SimpleCell descriptiom
@@ -155,12 +155,14 @@
         .myTop {
             background: #f7f7f8;
             border-radius: 16px 16px 0 0;
+            z-index: 30;
             .ratingBlock {
+                margin-top: 5px;
                 .Avatar {
                     box-sizing: content-box;
                     background: #ffeaa8;
                     border-radius: 50%;
-                    padding: 1px;
+                    padding: 2px;
                     box-shadow: 3px 3px 0 0 #fb0;
                 }
                 //? vkui SimpleCell descriptiom
