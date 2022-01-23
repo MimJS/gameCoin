@@ -55,7 +55,6 @@ const MainView = ({ id, go, createSocket, history }) => {
             <div className="gameContent">
               <div className="balance">
                 <span className="header">Ваш счет:</span>
-                {JSON.stringify(history)}
                 <div className="coins">
                   <span className="sum">
                     {number_format(userData?.dbData?.coins / 1000)}

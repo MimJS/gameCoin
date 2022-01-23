@@ -30,47 +30,51 @@ import ProfileView from "./views/profile";
 const App = () => {
   const viewList = ["main", "error", "rating", "profile"];
   const [activeView, setactiveView] = useState("main");
-  const [history, setHistory] = useState(["main"]);
+  const history = useSelector((s) => s.ui.history);
   const dispatch = useDispatch();
   const platform = usePlatform();
   const config = useSelector((s) => s.config);
   const socket = useSelector((s) => s.config.socket);
   const timer = useRef();
-
+  useEffect(() => {
+   if(history.length === 0){
+    bridge.send("VKWebAppClose", { status: "success" });
+   }
+  }, [history]);
   const goBack = () => {
-    if (history.length === 1) {
-      bridge.send("VKWebAppClose", { status: "success" });
-    } else if (history.length > 1) {
-      if (history[history.length - 1] === "rating") {
-        dispatch({
-          type: "setRatingData",
-          payload: { ratingName: "all", data: {} },
-        });
-        dispatch({
-          type: "setRatingData",
-          payload: { ratingName: "groups", data: {} },
-        });
-        dispatch({
-          type: "setRatingData",
-          payload: { ratingName: "friends", data: {} },
-        });
-        dispatch({
-          type: "setRatingData",
-          payload: { ratingName: "error", data: false },
-        });
-        dispatch({
-          type: "setRatingData",
-          payload: { ratingName: "myTop", data: {} },
-        });
-        dispatch({
-          type: "setRatingData",
-          payload: { ratingName: "myGroup", data: false },
-        });
-      }
-      history.pop();
-      console.log(history[history.length - 1]);
-      setactiveView(history[history.length - 1]);
+    console.log(history);
+    if (history.length === 0) {
+      return;
     }
+    if (history[history.length - 1] === "rating") {
+      dispatch({
+        type: "setRatingData",
+        payload: { ratingName: "all", data: {} },
+      });
+      dispatch({
+        type: "setRatingData",
+        payload: { ratingName: "groups", data: {} },
+      });
+      dispatch({
+        type: "setRatingData",
+        payload: { ratingName: "friends", data: {} },
+      });
+      dispatch({
+        type: "setRatingData",
+        payload: { ratingName: "error", data: false },
+      });
+      dispatch({
+        type: "setRatingData",
+        payload: { ratingName: "myTop", data: {} },
+      });
+      dispatch({
+        type: "setRatingData",
+        payload: { ratingName: "myGroup", data: false },
+      });
+    }
+    dispatch({
+      type: "goBackHistory",
+    });
   };
 
   useEffect(() => {
@@ -108,15 +112,15 @@ const App = () => {
     }
     if (v.detail.type === "VKWebAppViewRestore") {
       await clearHistory();
-      setactiveView("main");
     }
     console.log(v);
   });
 
   const clearHistory = () => {
     window.history.go(-window.history.length);
-    setHistory(["main"]);
-    setactiveView("main");
+    dispatch({
+      type: "defaultHistory",
+    });
   };
 
   const createSocket = async () => {
@@ -148,8 +152,10 @@ const App = () => {
   const go = (e) => {
     if (viewList.indexOf(e) > -1) {
       window.history.pushState({ panel: e }, e);
-      setactiveView(e);
-      history.push(e);
+      dispatch({
+        type: "addHistory",
+        payload: e,
+      });
     }
   };
 
@@ -209,7 +215,7 @@ const App = () => {
     <ConfigProvider isWebView={true} platform={isAndroid ? "android" : "ios"}>
       <AdaptivityProvider hasMouse={false}>
         <AppRoot>
-          <Root activeView={activeView}>
+          <Root activeView={history[history.length - 1]}>
             <MainView
               id={"main"}
               go={go}
@@ -218,7 +224,12 @@ const App = () => {
             />
             <RatingView id={"rating"} back={goBack} />
             <ProfileView id={"profile"} back={goBack} />
-            <ErrorView id={"error"} history={history} go={clearHistory} initError={initError} />
+            <ErrorView
+              id={"error"}
+              history={history}
+              go={clearHistory}
+              initError={initError}
+            />
           </Root>
         </AppRoot>
       </AdaptivityProvider>

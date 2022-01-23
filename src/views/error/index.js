@@ -23,7 +23,6 @@ const ErrorView = ({ id, go, history }) => {
           }
           stretched
         >
-          {JSON.stringify(history)}
           {errorData?.error_public}
         </Placeholder>
       </Panel>

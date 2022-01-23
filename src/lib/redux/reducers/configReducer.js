@@ -1,5 +1,5 @@
 const init = {
-  server_url: "https://a05fc2d5a35b46.lhr.life",
+  server_url: "https://7ae57f1fc768d7.lhr.life",
   socket: null,
   vkToken: null,
   appId: 8057051,
