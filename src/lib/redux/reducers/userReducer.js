@@ -13,6 +13,7 @@ const init = {
     myTop: {},
     myGroup: false,
   },
+  canCloseSocket: true,
 };
 
 export const userReducer = (state = init, action) => {
@@ -57,6 +58,9 @@ export const userReducer = (state = init, action) => {
       let newValue = { ...state.ratingData };
       newValue[action.payload.ratingName] = action.payload.data;
       return { ...state, ratingData: newValue };
+    case "setCanCloseSocket":
+      console.log(`62:` + action.payload);
+      return { ...state, canCloseSocket: action.payload };
     default:
       return state;
   }

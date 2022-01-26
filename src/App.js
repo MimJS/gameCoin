@@ -6,9 +6,12 @@ import {
   ANDROID,
   usePlatform,
   ConfigProvider,
-  Root,
   ScreenSpinner,
+  Root,
 } from "@vkontakte/vkui";
+
+// ? Import router
+import { useLocation, useRouter } from "@happysanta/router";
 
 //? Import styles
 import "@vkontakte/vkui/dist/vkui.css";
@@ -26,62 +29,32 @@ import MainView from "./views/main";
 import ErrorView from "./views/error";
 import RatingView from "./views/rating";
 import ProfileView from "./views/profile";
+import {
+  PANEL_MAIN,
+  PANEL_ERROR,
+  PANEL_PROFILE,
+  PANEL_RATING,
+  VIEW_ERROR,
+  VIEW_MAIN,
+  VIEW_PROFILE,
+  VIEW_RATING,
+  PAGE_ERROR,
+  PAGE_MAIN,
+} from "./lib/scripts/routes";
+import appView from "./lib/scripts/appView";
 
 const App = () => {
-  const viewList = ["main", "error", "rating", "profile"];
-  const [activeView, setactiveView] = useState("main");
-  const history = useSelector((s) => s.ui.history);
+  const viewList = ["/", "/error", "/rating", "/profile"];
   const dispatch = useDispatch();
-  const userData = useSelector((s) => s.user.dbData);
   const config = useSelector((s) => s.config);
-  const socket = useSelector((s) => s.config.socket);
   const timer = useRef();
-  useEffect(() => {
-    if (history.length === 0) {
-      bridge.send("VKWebAppClose", { status: "success" });
-    }
-  }, [history]);
-  const goBack = () => {
-    if (Object.keys(userData).length == 0) {
-      return;
-    }
-    console.log(history);
-    if (history.length === 0) {
-      return;
-    }
-    if (history[history.length - 1] === "rating") {
-      dispatch({
-        type: "setRatingData",
-        payload: { ratingName: "all", data: {} },
-      });
-      dispatch({
-        type: "setRatingData",
-        payload: { ratingName: "groups", data: {} },
-      });
-      dispatch({
-        type: "setRatingData",
-        payload: { ratingName: "friends", data: {} },
-      });
-      dispatch({
-        type: "setRatingData",
-        payload: { ratingName: "error", data: false },
-      });
-      dispatch({
-        type: "setRatingData",
-        payload: { ratingName: "myTop", data: {} },
-      });
-      dispatch({
-        type: "setRatingData",
-        payload: { ratingName: "myGroup", data: false },
-      });
-    }
-    dispatch({
-      type: "goBackHistory",
-    });
-  };
+  const location = useLocation();
+  const router = useRouter();
 
   useEffect(() => {
-    window.addEventListener("popstate", () => goBack());
+    window.addEventListener("popstate", () => {
+      return;
+    });
     bridge.subscribe(({ detail: { type, data } }) => {
       if (type === "VKWebAppUpdateConfig") {
         const schemeAttribute = document.createAttribute("scheme");
@@ -96,34 +69,6 @@ const App = () => {
       navigation_bar_color: "#F7F7F8",
     });
   }, []);
-
-  bridge.subscribe(async (v) => {
-    if (v.detail.type === "VKWebAppViewHide") {
-      if (socket != null) {
-        socket.disconnect(true);
-        dispatch({
-          type: "setSocket",
-          payload: null,
-        });
-        initError(
-          { error_public: "Подождите, переподключение к серверу" },
-          true,
-          false
-        );
-      }
-    }
-    if (v.detail.type === "VKWebAppViewRestore") {
-      await clearHistory();
-    }
-    console.log(v);
-  });
-
-  const clearHistory = () => {
-    window.history.go(-window.history.length);
-    dispatch({
-      type: "defaultHistory",
-    });
-  };
 
   const createSocket = async () => {
     const user = await bridge.send("VKWebAppGetUserInfo");
@@ -153,11 +98,7 @@ const App = () => {
 
   const go = (e) => {
     if (viewList.indexOf(e) > -1) {
-      window.history.pushState({ panel: e }, e);
-      dispatch({
-        type: "addHistory",
-        payload: e,
-      });
+      router.pushPage(String(e));
     }
   };
 
@@ -209,28 +150,63 @@ const App = () => {
         payload: error ? error : { error_public: "Сервер временно недоступен" },
         showButton: showButton,
       });
-      go("error");
+      go(PAGE_ERROR);
     }
   };
+
+  const goBack = () => {
+    router.popPage();
+  };
+
+  // app view settings
+  appView(go, initError);
 
   return (
     <ConfigProvider isWebView={true} platform={isAndroid ? "android" : "ios"}>
       <AdaptivityProvider hasMouse={false}>
         <AppRoot>
-          <Root activeView={history[history.length - 1]}>
+          <Root activeView={location.getViewId()}>
             <MainView
-              id={"main"}
+              id={VIEW_MAIN}
               go={go}
               createSocket={createSocket}
-              history={history}
+              history={
+                location.hasOverlay() ? [] : location.getViewHistory(VIEW_MAIN)
+              }
+              mainPanel={PANEL_MAIN}
+              onSwipeBack={() => router.popPage()}
             />
-            <RatingView id={"rating"} back={goBack} />
-            <ProfileView id={"profile"} back={goBack} />
+            <RatingView
+              id={VIEW_RATING}
+              back={goBack}
+              history={
+                location.hasOverlay()
+                  ? []
+                  : location.getViewHistory(VIEW_RATING)
+              }
+              mainPanel={PANEL_RATING}
+              onSwipeBack={() => router.popPage()}
+            />
+            <ProfileView
+              id={VIEW_PROFILE}
+              back={goBack}
+              history={
+                location.hasOverlay()
+                  ? []
+                  : location.getViewHistory(VIEW_PROFILE)
+              }
+              mainPanel={PANEL_PROFILE}
+              onSwipeBack={() => router.popPage()}
+            />
             <ErrorView
-              id={"error"}
-              history={history}
-              go={clearHistory}
+              id={VIEW_ERROR}
+              history={
+                location.hasOverlay() ? [] : location.getViewHistory(VIEW_ERROR)
+              }
+              go={go}
               initError={initError}
+              mainPanel={PANEL_ERROR}
+              onSwipeBack={() => router.popPage()}
             />
           </Root>
         </AppRoot>

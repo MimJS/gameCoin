@@ -90,6 +90,7 @@ export const socketListener = (socket, dispatch, go, initError, timer) => {
   });
   socket.on("disconnect", async (reason) => {
     console.log("off");
+    console.log(reason);
     clearInterval(timer.current);
     if (
       reason === "io server disconnect" ||

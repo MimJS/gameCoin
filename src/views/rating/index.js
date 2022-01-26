@@ -2,13 +2,13 @@ import {
   Panel,
   PanelHeader,
   PanelHeaderContent,
-  View,
   PanelHeaderButton,
   PullToRefresh,
   SimpleCell,
   List,
   Avatar,
   FixedLayout,
+  View,
 } from "@vkontakte/vkui";
 import { Icon28ChevronBack, Icon28AddCircleOutline } from "@vkontakte/icons";
 import {
@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import bridge from "@vkontakte/vk-bridge";
 import { number_format } from "../../lib/scripts/util";
 
-const RatingView = ({ id, back }) => {
+const RatingView = ({ id, history, mainPanel, back, onSwipeBack }) => {
   const [isFetch, setIsFetch] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const [awaitSort, setAwaitSort] = useState(false);
@@ -273,8 +273,10 @@ const RatingView = ({ id, back }) => {
       id={id}
       activePanel="ratingView--panel_main"
       popout={awaitSort ? popout : null}
+      history={history}
+      onSwipeBack={onSwipeBack}
     >
-      <Panel id="ratingView--panel_main">
+      <Panel id={mainPanel}>
         <PanelHeader
           separator={false}
           left={

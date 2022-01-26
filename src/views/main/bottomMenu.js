@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getPopout } from "../../lib/components/popouts";
 import { RatingIcon, TransferIcon, MoreIcon, GamesIcon } from "../../lib/icons";
+import { PAGE_RATING } from "../../lib/scripts/routes";
 
 const BottomMenu = ({go}) => {
   const [activeTab, setActiveTab] = useState(0);
@@ -23,7 +24,7 @@ const BottomMenu = ({go}) => {
     {
       name: "Рейтинг",
       icon: <RatingIcon />,
-      location: "rating",
+      location: PAGE_RATING,
     },
     {
       name: "Перевести",

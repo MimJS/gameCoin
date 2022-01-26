@@ -1,11 +1,11 @@
 import {
   Panel,
   PanelHeader,
-  View,
   PanelHeaderButton,
   PanelHeaderContent,
   Avatar,
   List,
+  View
 } from "@vkontakte/vkui";
 import { Icon28ChevronBack } from "@vkontakte/icons";
 import {
@@ -17,11 +17,16 @@ import {
 } from "../../lib/icons";
 import { useSelector } from "react-redux";
 
-const ProfileView = ({ id, back }) => {
+const ProfileView = ({ id, back, history, mainPanel, onSwipeBack }) => {
   const userData = useSelector((s) => s.user.dbData);
   return (
-    <View id={id} activePanel="profileView--panel_main">
-      <Panel id={"profileView--panel_main"}>
+    <View
+      id={id}
+      activePanel="profileView--panel_main"
+      history={history}
+      onSwipeBack={onSwipeBack}
+    >
+      <Panel id={mainPanel}>
         <PanelHeader
           separator={false}
           left={

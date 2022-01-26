@@ -9,10 +9,18 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { CoinIcon } from "../../lib/icons";
 import CoinIconUrl from "../../lib/icons/coin.svg";
+import { PAGE_PROFILE } from "../../lib/scripts/routes";
 import { number_format } from "../../lib/scripts/util";
 import BottomMenu from "./bottomMenu";
 
-const MainView = ({ id, go, createSocket, history }) => {
+const MainView = ({
+  id,
+  go,
+  createSocket,
+  history,
+  mainPanel,
+  onSwipeBack,
+}) => {
   //? variables
   const userData = useSelector((s) => s.user);
   const ui = useSelector((s) => s.ui);
@@ -26,15 +34,17 @@ const MainView = ({ id, go, createSocket, history }) => {
       id={id}
       activePanel="mainView--panel_main"
       popout={ui.popout.mainView}
+      history={history}
+      onSwipeBack={onSwipeBack}
     >
-      <Panel id="mainView--panel_main">
+      <Panel id={mainPanel}>
         <PanelHeader separator={false}>
           <PanelHeaderContent
             before={
               <Avatar
                 size={40}
                 src={userData?.dbData?.vk?.photo_100}
-                onClick={() => go("profile")}
+                onClick={() => go(PAGE_PROFILE)}
               />
             }
             status={
@@ -54,7 +64,7 @@ const MainView = ({ id, go, createSocket, history }) => {
           <>
             <div className="gameContent">
               <div className="balance">
-                <span className="header">Ваш счет:</span>
+                  <span className="header">Ваш счет:</span>
                 <div className="coins">
                   <span className="sum">
                     {number_format(userData?.dbData?.coins / 1000)}

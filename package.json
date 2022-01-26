@@ -19,6 +19,8 @@
     "react-scripts": "^4.0.3"
   },
   "dependencies": {
+    "@cteamdev/router": "^0.2.9",
+    "@happysanta/router": "^0.3.1",
     "@vkontakte/icons": "^1.141.0",
     "@vkontakte/vk-bridge": "^2.5.3",
     "@vkontakte/vk-miniapps-deploy": "^0.0.25",

@@ -1,15 +1,21 @@
 import { useSelector } from "react-redux";
-import { View, Panel, PanelHeader, Placeholder, Button } from "@vkontakte/vkui";
+import { Panel, PanelHeader, Placeholder, Button, View } from "@vkontakte/vkui";
 import { Icon56ErrorOutline } from "@vkontakte/icons";
+import { PAGE_MAIN } from "@happysanta/router";
 
-const ErrorView = ({ id, go, history }) => {
+const ErrorView = ({ id, go, history, mainPanel, onSwipeBack }) => {
   const errorData = useSelector((s) => s.user.errorData);
   const reInit = () => {
-    go("main");
+    go(PAGE_MAIN);
   };
   return (
-    <View activePanel="errorView--panel_main" id={id}>
-      <Panel id="errorView--panel_main">
+    <View
+      activePanel="errorView--panel_main"
+      id={id}
+      history={history}
+      onSwipeBack={onSwipeBack}
+    >
+      <Panel id={mainPanel}>
         <PanelHeader separator={false} />
         <Placeholder
           icon={<Icon56ErrorOutline style={{ color: "#ef5350" }} />}
